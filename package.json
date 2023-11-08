@@ -1,0 +1,18 @@
+{
+  "name": "googlecalendarscript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "batch": "node index.js batch",
+    "daily": "node index.js daily",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fransotodev",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.1",
+    "googleapis": "^105.0.0"
+  }
+}
