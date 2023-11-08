@@ -3,7 +3,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const process = require("process");
-const { authenticate } = require("@google-cloud/local-auth");
+const { authenticate } = require('google-auth-library');
 const { google } = require("googleapis");
 
 // If modifying these scopes, delete token.json.
