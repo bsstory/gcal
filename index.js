@@ -12,6 +12,7 @@ app.get('/events', async (req, res) => {
     const results = await listEvents(auth, cid, day);
     res.json(results); // 결과를 JSON 형식으로 반환
   } catch (error) {
+    console.error(error); // 오류를 콘솔에 기록
     res.status(500).send('Internal Server Error');
   }
 });
