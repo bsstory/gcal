@@ -1,76 +1,62 @@
-// From official quickstart at https://developers.google.com/calendar/api/quickstart/nodejs
+const fs = require('fs').promises;
+const { google } = require('googleapis');
+const path = require('path');
+const process = require('process');
+const { OAuth2Client } = require('google-auth-library');
 
-const fs = require("fs").promises;
-const path = require("path");
-const process = require("process");
-const { authenticate } = require('google-auth-library');
-const { google } = require("googleapis");
+const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const TOKEN_PATH = path.join(process.cwd(), 'credentials', 'token.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials', 'credentials.json');
 
-// If modifying these scopes, delete token.json.
-const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = path.join(process.cwd(), "credentials", "token.json");
-const CREDENTIALS_PATH = path.join(
-  process.cwd(),
-  "credentials",
-  "credentials.json"
-);
-
-/**
- * Reads previously authorized credentials from the save file.
- *
- * @return {Promise<OAuth2Client|null>}
- */
-async function loadSavedCredentialsIfExist() {
-  try {
-    const content = await fs.readFile(TOKEN_PATH);
-    const credentials = JSON.parse(content);
-    return google.auth.fromJSON(credentials);
-  } catch (err) {
-    return null;
-  }
-}
-
-/**
- * Serializes credentials to a file compatible with GoogleAUth.fromJSON.
- *
- * @param {OAuth2Client} client
- * @return {Promise<void>}
- */
-async function saveCredentials(client) {
+async function loadCredentialsFile() {
   const content = await fs.readFile(CREDENTIALS_PATH);
-  const keys = JSON.parse(content);
-  const key = keys.installed || keys.web;
-  const payload = JSON.stringify({
-    type: "authorized_user",
-    client_id: key.client_id,
-    client_secret: key.client_secret,
-    refresh_token: client.credentials.refresh_token,
-  });
-  await fs.writeFile(TOKEN_PATH, payload);
+  return JSON.parse(content);
 }
 
-/**
- * Load or request or authorization to call APIs.
- *
- */
-async function authorize() {
-  let client = await loadSavedCredentialsIfExist();
-  if (client) {
-    return client;
+function authorize(credentials) {
+  const { client_secret, client_id, redirect_uris } = credentials.installed;
+  const oAuth2Client = new google.auth.OAuth2(
+    client_id, client_secret, redirect_uris[0]);
+
+  return oAuth2Client;
+}
+
+async function checkToken(oAuth2Client) {
+  // Check if we have previously stored a token.
+  try {
+    const token = await fs.readFile(TOKEN_PATH);
+    oAuth2Client.setCredentials(JSON.parse(token));
+  } catch (err) {
+    return getNewToken(oAuth2Client); // getNewToken will handle the user authorization flow
   }
-  client = await authenticate({
-    scopes: SCOPES,
-    keyfilePath: CREDENTIALS_PATH,
+}
+
+function getNewToken(oAuth2Client) {
+  // Generate a url that asks permissions for the SCOPES
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: SCOPES,
   });
-  if (client.credentials) {
-    await saveCredentials(client);
-  }
-  return client;
+
+  // Your code to redirect user to the authUrl
+}
+
+async function verifyToken(oAuth2Client, code) {
+  // Verify the code from the query
+  const { tokens } = await oAuth2Client.getToken(code);
+  oAuth2Client.setCredentials(tokens);
+  // Store the token to disk for later program executions
+  await fs.writeFile(TOKEN_PATH, JSON.stringify(tokens));
+}
+
+async function getAuthenticatedClient() {
+  const credentials = await loadCredentialsFile();
+  const oAuth2Client = authorize(credentials);
+  await checkToken(oAuth2Client);
+  return oAuth2Client;
 }
 
 module.exports = {
-  authorize,
+  getAuthenticatedClient,
+  verifyToken, // Export this to use in your OAuth2 callback route
 };
