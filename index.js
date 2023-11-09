@@ -8,7 +8,7 @@ const { listEvents } = require('./modules/listEvents');
 app.use(bodyParser.json());
 
 // 이 엔드포인트는 인증된 사용자의 이벤트를 나열합니다.
-app.post('/chat', async function(req, res, next) {
+app.post('/chat', async function(req, res) {
   const messageText = req.body.message.text;
   if (messageText.startsWith('/캘린더조회 ')) {
     const calendarName = messageText.replace('/캘린더조회 ', '').trim();
@@ -20,7 +20,7 @@ app.post('/chat', async function(req, res, next) {
       res.json(results); // 결과를 JSON 형식으로 반환
     } catch (error) {
       console.error(error); // 오류를 콘솔에 기록
-      res.status(500).send('Internal Server Error');
+      res.json("인증 실패");
     }
   } else {
     // 기본적으로 메시지를 그대로 반환
