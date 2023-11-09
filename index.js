@@ -13,11 +13,13 @@ app.post('/chat', async function(req, res) {
   if (messageText.startsWith('/캘린더조회 ')) {
     const calendarName = messageText.replace('/캘린더조회 ', '').trim();
     try {
-      const auth = await getAuthenticatedClient();
+      const auth = await getAuthenticatedClient(res);
       const cid = 'seungwoo@dcamp.kr'; // 또는 req.query.cid 사용
       let day = '2023-11-09'; // 또는 req.query.day 사용
-      const results = await listEvents(auth, cid, day);
-      res.json(results); // 결과를 JSON 형식으로 반환
+      if(auth.credentials.access_token != undefined){
+        const results = await listEvents(auth, cid, day);
+        res.json(results); // 결과를 JSON 형식으로 반환
+      }
     } catch (error) {
       console.error(error); // 오류를 콘솔에 기록
       res.json("인증 실패");
@@ -33,7 +35,12 @@ app.post('/chat', async function(req, res) {
 app.get('/callback', async (req, res) => {
   try {
     const code = req.query.code;
-    await verifyToken(code); // 인증 코드를 검증하고 토큰을 저장합니다.
+    if (!code) {
+      res.status(400).send('Code is required');
+      return;
+    }
+    const oAuth2Client = await getAuthenticatedClient(); // getAuthenticatedClient 호출 수정
+    await verifyToken(oAuth2Client, code); // verifyToken 함수 수정하여 oAuth2Client 인스턴스 전달
     res.redirect('/chat'); // 인증이 성공하면 /events 경로로 리디렉션합니다.
   } catch (error) {
     console.error(error);
