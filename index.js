@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 const process = require('process');
 const { getAuthenticatedClient, verifyToken } = require('./modules/auth');
 const { listEvents } = require('./modules/listEvents');
+
+app.use(bodyParser.json());
 
 // 이 엔드포인트는 인증된 사용자의 이벤트를 나열합니다.
 app.post('/chat', async function(req, res, next) {
