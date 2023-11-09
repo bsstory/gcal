@@ -41,7 +41,7 @@ app.get('/callback', async (req, res) => {
     }
     const oAuth2Client = await getAuthenticatedClient(); // getAuthenticatedClient 호출 수정
     await verifyToken(oAuth2Client, code); // verifyToken 함수 수정하여 oAuth2Client 인스턴스 전달
-    res.redirect('/chat'); // 인증이 성공하면 /events 경로로 리디렉션합니다.
+    //res.redirect('/chat'); // 인증이 성공하면 /events 경로로 리디렉션합니다.
   } catch (error) {
     console.error(error);
     res.status(500).send('Authentication failed');
