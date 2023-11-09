@@ -20,6 +20,10 @@ app.post('/chat', async function(req, res) {
         const results = await listEvents(auth, cid, day);
         res.json(results); // 결과를 JSON 형식으로 반환
       }
+      else {
+      console.error(error); // 오류를 콘솔에 기록
+      res.json("access token 없음");  
+      }
     } catch (error) {
       console.error(error); // 오류를 콘솔에 기록
       res.json("인증 실패");
