@@ -64,6 +64,7 @@ async function getAuthenticatedClient(res) {
   const credentials = await loadCredentialsFile();
   const oAuth2Client = authorize(credentials);
   await checkToken(oAuth2Client, res);
+  console.log(`인증정보 리턴할예정`);
   return oAuth2Client;
 }
 
