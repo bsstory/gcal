@@ -21,11 +21,11 @@ app.post('/chat', async function(req, res) {
         res.json(results); // 결과를 JSON 형식으로 반환
       }
       else {
-      console.error(error); // 오류를 콘솔에 기록
+      console.error(error + ", access token 없음"); // 오류를 콘솔에 기록
       res.json("access token 없음");  
       }
     } catch (error) {
-      console.error(error); // 오류를 콘솔에 기록
+      console.error(error + "인증 실패"); // 오류를 콘솔에 기록
       res.json("인증 실패");
     }
   } else {
