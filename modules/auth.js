@@ -45,6 +45,7 @@ function getNewToken(oAuth2Client, res) {
   if (res) {
     console.log(`리다이렉션중: ${authUrl}`);
     res.redirect(authUrl); // Use 'res' for redirection
+    console.log(`리다이렉션 완료`);
   } else {
     console.log(`Authorize this app by visiting this url: ${authUrl}`);
     return authUrl; // Or return URL if 'res' is not provided
