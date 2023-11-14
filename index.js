@@ -14,6 +14,7 @@ app.post('/chat', async function(req, res) {
     const calendarName = messageText.replace('/캘린더조회 ', '').trim();
     try {
       const auth = await getAuthenticatedClient(res);
+      console.error("get 함수 실행완료");
       const cid = 'seungwoo@dcamp.kr'; // 또는 req.query.cid 사용
       let day = '2023-11-09'; // 또는 req.query.day 사용
       if(auth.credentials.access_token != undefined){
